@@ -1,0 +1,3 @@
+* API call GET /api/reports/[year/month/day] endpoints, optional filters
+* own more tables: e.g. DailyPassStatistics, MonthlyPassStatistics, YearlyPassStatistics
+* direct HTTP calls or subscription to events from other services to get statistics
