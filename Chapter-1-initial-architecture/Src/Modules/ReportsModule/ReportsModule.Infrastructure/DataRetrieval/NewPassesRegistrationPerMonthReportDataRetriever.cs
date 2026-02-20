@@ -1,10 +1,13 @@
-namespace EvolutionaryArchitecture.Fitnet.Reports.GenerateNewPassesRegistrationsPerMonthReport.DataRetriever;
+﻿namespace Fitnet.Modules.ReportsModule.Infrastructure.DataRetrieval;
 
+using Application.DataRetrieval;
+using Application.Dtos;
 using Dapper;
-using Dtos;
 using DataAccess;
 
-internal sealed class NewPassesRegistrationPerMonthReportDataRetriever(IDatabaseConnectionFactory databaseConnectionFactory, TimeProvider timeProvider) : INewPassesRegistrationPerMonthReportDataRetriever
+internal sealed class NewPassesRegistrationPerMonthReportDataRetriever(
+    IDatabaseConnectionFactory databaseConnectionFactory,
+    TimeProvider timeProvider) : INewPassesRegistrationPerMonthReportDataRetriever
 {
     public async Task<IReadOnlyCollection<NewPassesRegistrationsPerMonthDto>> GetReportDataAsync(CancellationToken cancellationToken = default)
     {

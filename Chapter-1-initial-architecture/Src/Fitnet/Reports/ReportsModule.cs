@@ -1,14 +1,11 @@
-namespace EvolutionaryArchitecture.Fitnet.Reports;
-
-using DataAccess;
-using GenerateNewPassesRegistrationsPerMonthReport;
+﻿namespace EvolutionaryArchitecture.Fitnet.Reports;
 
 internal static class ReportsModule
 {
     internal static IServiceCollection AddReports(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDataAccess(configuration);
-        services.AddNewPassesRegistrationsPerMonthReport();
+        services.AddReportsApplication();
+        services.AddReportsInfrastructure(configuration);
 
         return services;
     }
