@@ -1,0 +1,4 @@
+* Reports Module
+* The module is responsible for presenting statistics about how many gym passes were registered in each month of the current year
+* It is not responsible for registering gym passes, managing users, or any other business logic related to gym passes or contracts management
+* What data belongs to this module: passes table to retrieve pass registration data, does not own any data directly
