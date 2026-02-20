@@ -1,4 +1,4 @@
-﻿namespace Fitnet.Modules.ReportsModule.Infrastructure.DataAccess;
+﻿namespace EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Infrastructure.DataAccess;
 
 internal sealed class ReportsPersistenceOptions
 {

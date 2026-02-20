@@ -29,6 +29,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Modules\ReportsModule\ReportsModule.Application\ReportsModule.Application.csproj" />
+      <ProjectReference Include="..\Modules\ReportsModule\ReportsModule.Infrastructure\ReportsModule.Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
       <Content Include="..\..\Docs\Contracts\Api\Contracts.http">
         <Link>Contracts.http</Link>
       </Content>

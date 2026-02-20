@@ -1,11 +1,11 @@
-namespace EvolutionaryArchitecture.Fitnet.IntegrationTests.Reports.GenerateNewPassesPerMonthReport;
+﻿namespace EvolutionaryArchitecture.Fitnet.IntegrationTests.Reports.GenerateNewPassesPerMonthReport;
 
 using Common.TestEngine.Configuration;
 using Common.TestEngine.IntegrationEvents.Handlers;
 using Common.TestEngine.Time;
+using EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Application.Dtos;
 using Fitnet.Contracts.SignContract.Events;
 using Fitnet.Reports;
-using Fitnet.Reports.GenerateNewPassesRegistrationsPerMonthReport.Dtos;
 using Passes.RegisterPass;
 using TestData;
 

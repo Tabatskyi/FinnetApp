@@ -1,5 +1,7 @@
 ﻿namespace EvolutionaryArchitecture.Fitnet.Reports;
 
+using EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Application;
+
 internal static class ReportsEndpoints
 {
     internal static void MapReports(this IEndpointRouteBuilder app) => app.MapGet(ReportsApiPaths.GenerateNewReport, async (

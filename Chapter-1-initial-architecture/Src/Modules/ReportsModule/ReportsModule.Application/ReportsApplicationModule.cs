@@ -1,4 +1,4 @@
-﻿namespace Fitnet.Modules.ReportsModule.Application;
+﻿namespace EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Application;
 
 using Microsoft.Extensions.DependencyInjection;
 

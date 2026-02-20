@@ -1,4 +1,4 @@
-﻿namespace Fitnet.Modules.ReportsModule.Infrastructure.DataRetrieval;
+﻿namespace EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Infrastructure.DataRetrieval;
 
 using Application.DataRetrieval;
 using Application.Dtos;

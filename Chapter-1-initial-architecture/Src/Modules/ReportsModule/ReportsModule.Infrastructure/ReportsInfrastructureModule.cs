@@ -1,4 +1,4 @@
-﻿namespace Fitnet.Modules.ReportsModule.Infrastructure;
+﻿namespace EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Infrastructure;
 
 using Application.DataRetrieval;
 using DataAccess;
