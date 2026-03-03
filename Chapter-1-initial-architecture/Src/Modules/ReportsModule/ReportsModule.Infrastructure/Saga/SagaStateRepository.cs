@@ -14,4 +14,7 @@ internal sealed class SagaStateRepository(ReportsPersistence context) : ISagaSta
 
     public Task<GenerateReportSagaState?> FindBySagaIdAsync(Guid sagaId, CancellationToken cancellationToken = default) =>
         context.SagaStates.FirstOrDefaultAsync(s => s.SagaId == sagaId, cancellationToken);
+
+    public Task<GenerateReportSagaState?> FindByCorrelationIdAsync(string correlationId, CancellationToken cancellationToken = default) =>
+        context.SagaStates.FirstOrDefaultAsync(s => s.CorrelationId == correlationId, cancellationToken);
 }

@@ -1,6 +1,7 @@
 ﻿namespace EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Application.Saga;
 
 using System.Text.Json;
+using System.Globalization;
 using DataRetrieval;
 using Domain;
 using Domain.Events;
@@ -20,6 +21,20 @@ internal sealed class GenerateReportSaga(
         CancellationToken cancellationToken = default)
     {
         var now = timeProvider.GetUtcNow();
+        var correlationId = now.Year.ToString(CultureInfo.InvariantCulture);
+
+        var existingState = await sagaStateRepository.FindByCorrelationIdAsync(correlationId, cancellationToken);
+        if (existingState is { Status: SagaStatus.Completed })
+        {
+            var existingData = await dataRetriever.GetReportDataAsync(cancellationToken);
+            return (existingState, NewPassesRegistrationsPerMonthResponse.Create(existingData));
+        }
+
+        if (existingState is not null)
+        {
+            return (existingState, null);
+        }
+
         var state = GenerateReportSagaState.Start(now.Year, now);
 
         IReadOnlyCollection<NewPassesRegistrationsPerMonthDto> reportData;

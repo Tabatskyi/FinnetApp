@@ -16,6 +16,7 @@ internal sealed class GenerateReportSagaStateEntityConfiguration : IEntityTypeCo
         builder.Property(s => s.CreatedAt).IsRequired();
         builder.Property(s => s.UpdatedAt).IsRequired();
         builder.Property(s => s.FailureReason).HasMaxLength(500);
+        builder.HasIndex(s => s.CorrelationId).IsUnique();
         builder.ToTable("SagaStates");
     }
 }

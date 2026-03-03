@@ -60,7 +60,12 @@ internal sealed partial class OutboxProcessor(
         }
 
         var sagaState = await sagaStateRepository.FindBySagaIdAsync(@event.ReportId, cancellationToken);
-        sagaState?.Complete(timeProvider.GetUtcNow());
+        if (sagaState is null || sagaState.Status == SagaStatus.Completed)
+        {
+            return;
+        }
+
+        sagaState.Complete(timeProvider.GetUtcNow());
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Dispatching outbox message {Id} of type {Type} occurred at {CreatedAt}")]

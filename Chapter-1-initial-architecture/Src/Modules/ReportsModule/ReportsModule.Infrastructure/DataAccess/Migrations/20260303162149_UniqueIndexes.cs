@@ -2,19 +2,20 @@
 
 namespace EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Infrastructure.DataAccess.Migrations;
 
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-[ExcludeFromCodeCoverage]
-public partial class SagaStates : Migration
+
+/// <inheritdoc />
+public partial class UniqueIndexes : Migration
 {
+    /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-        // No-op: generated before model changes were tracked.
+
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-        // No-op: nothing to reverse.
+        // <inheritdoc />
     }
 }
