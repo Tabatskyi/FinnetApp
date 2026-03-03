@@ -1,10 +1,12 @@
 ﻿namespace EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Infrastructure;
 
 using Application.DataRetrieval;
+using Application.Outbox;
 using DataAccess;
 using DataRetrieval;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Outbox;
 
 public static class ReportsInfrastructureModule
 {
@@ -14,6 +16,9 @@ public static class ReportsInfrastructureModule
         services.AddOptionsWithValidateOnStart<ReportsPersistenceOptions>();
         services.AddScoped<IDatabaseConnectionFactory, DatabaseConnectionFactory>();
         services.AddSingleton<INewPassesRegistrationPerMonthReportDataRetriever, NewPassesRegistrationPerMonthReportDataRetriever>();
+
+        services.AddSingleton<IOutboxRepository, OutboxRepository>();
+        services.AddHostedService<OutboxProcessor>();
 
         return services;
     }
