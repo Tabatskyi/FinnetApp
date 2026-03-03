@@ -19,7 +19,7 @@ public static class ReportsInfrastructureModule
         services.Configure<ReportsPersistenceOptions>(configuration.GetSection(ReportsPersistenceOptions.SectionName));
         services.AddOptionsWithValidateOnStart<ReportsPersistenceOptions>();
         services.AddScoped<IDatabaseConnectionFactory, DatabaseConnectionFactory>();
-        services.AddSingleton<INewPassesRegistrationPerMonthReportDataRetriever, NewPassesRegistrationPerMonthReportDataRetriever>();
+        services.AddScoped<INewPassesRegistrationPerMonthReportDataRetriever, NewPassesRegistrationPerMonthReportDataRetriever>();
 
         services.AddDbContext<ReportsPersistence>(options =>
             options.UseNpgsql(configuration.GetConnectionString("Reports")));
