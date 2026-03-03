@@ -1,6 +1,9 @@
 ﻿namespace EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Infrastructure.Outbox;
 
+using System.Text.Json;
 using Application.Outbox;
+using Application.Saga;
+using Domain.Events;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -24,21 +27,40 @@ internal sealed partial class OutboxProcessor(
     private async Task ProcessPendingMessagesAsync(CancellationToken cancellationToken)
     {
         using var scope = scopeFactory.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<IOutboxRepository>();
-        var pending = await repository.GetPendingAsync(cancellationToken);
+        var outboxRepository = scope.ServiceProvider.GetRequiredService<IOutboxRepository>();
+        var sagaStateRepository = scope.ServiceProvider.GetRequiredService<ISagaStateRepository>();
+        var pending = await outboxRepository.GetPendingAsync(cancellationToken);
 
         foreach (var message in pending)
         {
             try
             {
                 LogDispatchingMessage(logger, message.Id, message.Type, message.CreatedAt);
-                await repository.MarkProcessedAsync(message.Id, timeProvider.GetUtcNow(), cancellationToken);
+                await UpdateSagaStateAsync(message, sagaStateRepository, cancellationToken);
+                await outboxRepository.MarkProcessedAsync(message.Id, timeProvider.GetUtcNow(), cancellationToken);
             }
             catch (Exception ex)
             {
                 LogDispatchFailed(logger, message.Id, ex);
             }
         }
+    }
+
+    private async Task UpdateSagaStateAsync(OutboxMessage message, ISagaStateRepository sagaStateRepository, CancellationToken cancellationToken)
+    {
+        if (message.Type != nameof(ReportGeneratedEvent))
+        {
+            return;
+        }
+
+        var @event = JsonSerializer.Deserialize<ReportGeneratedEvent>(message.Payload);
+        if (@event is null)
+        {
+            return;
+        }
+
+        var sagaState = await sagaStateRepository.FindBySagaIdAsync(@event.ReportId, cancellationToken);
+        sagaState?.Complete(timeProvider.GetUtcNow());
     }
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Dispatching outbox message {Id} of type {Type} occurred at {CreatedAt}")]

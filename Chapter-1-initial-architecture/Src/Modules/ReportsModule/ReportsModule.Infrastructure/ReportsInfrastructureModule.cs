@@ -4,6 +4,7 @@ using Application;
 using Application.DataRetrieval;
 using Application.GeneratedReports;
 using Application.Outbox;
+using Application.Saga;
 using DataAccess;
 using DataRetrieval;
 using GeneratedReports;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Outbox;
+using Saga;
 
 public static class ReportsInfrastructureModule
 {
@@ -26,6 +28,7 @@ public static class ReportsInfrastructureModule
 
         services.AddScoped<IOutboxRepository, OutboxRepository>();
         services.AddScoped<IGeneratedReportRepository, GeneratedReportRepository>();
+        services.AddScoped<ISagaStateRepository, SagaStateRepository>();
         services.AddScoped<IReportsUnitOfWork>(provider => provider.GetRequiredService<ReportsPersistence>());
 
         services.AddHostedService<OutboxProcessor>();

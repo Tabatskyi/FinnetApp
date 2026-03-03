@@ -12,23 +12,25 @@ internal sealed class GenerateReportSaga(
     INewPassesRegistrationPerMonthReportDataRetriever dataRetriever,
     IGeneratedReportRepository generatedReportRepository,
     IOutboxRepository outboxRepository,
+    ISagaStateRepository sagaStateRepository,
     IReportsUnitOfWork unitOfWork,
     TimeProvider timeProvider)
 {
     public async Task<(GenerateReportSagaState State, NewPassesRegistrationsPerMonthResponse? Report)> ExecuteAsync(
         CancellationToken cancellationToken = default)
     {
-        var state = GenerateReportSagaState.Start(timeProvider.GetUtcNow().Year);
+        var now = timeProvider.GetUtcNow();
+        var state = GenerateReportSagaState.Start(now.Year, now);
 
         IReadOnlyCollection<NewPassesRegistrationsPerMonthDto> reportData;
         try
         {
             reportData = await dataRetriever.GetReportDataAsync(cancellationToken);
-            state.Advance();
+            state.Advance(timeProvider.GetUtcNow());
         }
         catch (Exception ex)
         {
-            state.Fail($"Data retrieval failed: {ex.Message}");
+            state.Fail($"Data retrieval failed: {ex.Message}", timeProvider.GetUtcNow());
             return (state, null);
         }
 
@@ -42,16 +44,17 @@ internal sealed class GenerateReportSaga(
         {
             await generatedReportRepository.AddAsync(generatedReport, cancellationToken);
             await outboxRepository.AddAsync(outboxMessage, cancellationToken);
+            await sagaStateRepository.AddAsync(state, cancellationToken);
             await unitOfWork.SaveAsync(cancellationToken);
-            state.Advance();
+            state.Advance(timeProvider.GetUtcNow());
         }
         catch (Exception ex)
         {
-            state.Fail($"Persisting report failed: {ex.Message}");
+            state.Fail($"Persisting report failed: {ex.Message}", timeProvider.GetUtcNow());
             return (state, null);
         }
 
-        state.Advance();
+        state.Advance(timeProvider.GetUtcNow());
 
         return (state, NewPassesRegistrationsPerMonthResponse.Create(reportData));
     }
