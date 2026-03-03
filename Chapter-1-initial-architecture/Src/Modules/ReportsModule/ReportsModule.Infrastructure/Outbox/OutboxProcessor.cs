@@ -1,11 +1,12 @@
 ﻿namespace EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Infrastructure.Outbox;
 
 using Application.Outbox;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 internal sealed partial class OutboxProcessor(
-    IOutboxRepository outboxRepository,
+    IServiceScopeFactory scopeFactory,
     TimeProvider timeProvider,
     ILogger<OutboxProcessor> logger) : BackgroundService
 {
@@ -22,14 +23,16 @@ internal sealed partial class OutboxProcessor(
 
     private async Task ProcessPendingMessagesAsync(CancellationToken cancellationToken)
     {
-        var pending = await outboxRepository.GetPendingAsync(cancellationToken);
+        using var scope = scopeFactory.CreateScope();
+        var repository = scope.ServiceProvider.GetRequiredService<IOutboxRepository>();
+        var pending = await repository.GetPendingAsync(cancellationToken);
 
         foreach (var message in pending)
         {
             try
             {
-                LogDispatchingMessage(logger, message.Id, message.EventType, message.OccurredAt);
-                await outboxRepository.MarkProcessedAsync(message.Id, timeProvider.GetUtcNow(), cancellationToken);
+                LogDispatchingMessage(logger, message.Id, message.Type, message.CreatedAt);
+                await repository.MarkProcessedAsync(message.Id, timeProvider.GetUtcNow(), cancellationToken);
             }
             catch (Exception ex)
             {
@@ -38,8 +41,8 @@ internal sealed partial class OutboxProcessor(
         }
     }
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Dispatching outbox message {Id} of type {EventType} occurred at {OccurredAt}")]
-    private static partial void LogDispatchingMessage(ILogger logger, Guid id, string eventType, DateTimeOffset occurredAt);
+    [LoggerMessage(Level = LogLevel.Information, Message = "Dispatching outbox message {Id} of type {Type} occurred at {CreatedAt}")]
+    private static partial void LogDispatchingMessage(ILogger logger, Guid id, string type, DateTimeOffset createdAt);
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Failed to dispatch outbox message {Id}")]
     private static partial void LogDispatchFailed(ILogger logger, Guid id, Exception ex);

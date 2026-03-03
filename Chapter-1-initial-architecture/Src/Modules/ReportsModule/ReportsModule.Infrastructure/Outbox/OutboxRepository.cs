@@ -1,28 +1,30 @@
 ﻿namespace EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Infrastructure.Outbox;
 
-using System.Collections.Concurrent;
 using Application.Outbox;
+using DataAccess;
+using Microsoft.EntityFrameworkCore;
 
-internal sealed class OutboxRepository : IOutboxRepository
+internal sealed class OutboxRepository(ReportsPersistence context) : IOutboxRepository
 {
-    private readonly ConcurrentQueue<OutboxMessage> _store = new();
-
     public Task AddAsync(OutboxMessage message, CancellationToken cancellationToken = default)
     {
-        _store.Enqueue(message);
+        context.OutboxMessages.Add(message);
         return Task.CompletedTask;
     }
 
-    public Task<IReadOnlyCollection<OutboxMessage>> GetPendingAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyCollection<OutboxMessage>> GetPendingAsync(CancellationToken cancellationToken = default)
     {
-        IReadOnlyCollection<OutboxMessage> pending = [.. _store.Where(m => !m.IsProcessed)];
-        return Task.FromResult(pending);
+        var pending = await context.OutboxMessages
+            .Where(m => m.ProcessedAt == null)
+            .ToListAsync(cancellationToken);
+
+        return pending;
     }
 
-    public Task MarkProcessedAsync(Guid id, DateTimeOffset processedAt, CancellationToken cancellationToken = default)
+    public async Task MarkProcessedAsync(Guid id, DateTimeOffset processedAt, CancellationToken cancellationToken = default)
     {
-        var message = _store.FirstOrDefault(m => m.Id == id);
+        var message = await context.OutboxMessages.FindAsync([id], cancellationToken);
         message?.MarkProcessed(processedAt);
-        return Task.CompletedTask;
+        await context.SaveChangesAsync(cancellationToken);
     }
 }

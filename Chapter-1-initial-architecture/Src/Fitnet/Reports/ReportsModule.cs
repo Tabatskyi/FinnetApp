@@ -2,6 +2,7 @@
 
 using EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Application;
 using EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Infrastructure;
+using EvolutionaryArchitecture.Fitnet.Modules.ReportsModule.Infrastructure.DataAccess;
 
 internal static class ReportsModule
 {
@@ -13,6 +14,9 @@ internal static class ReportsModule
         return services;
     }
 
-    internal static IApplicationBuilder UseReports(this IApplicationBuilder applicationBuilder) =>
-        applicationBuilder;
+    internal static IApplicationBuilder UseReports(this IApplicationBuilder applicationBuilder)
+    {
+        applicationBuilder.ApplicationServices.UseReportsMigrations();
+        return applicationBuilder;
+    }
 }
